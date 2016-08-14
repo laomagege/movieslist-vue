@@ -1,0 +1,11 @@
+var Vue = require('vue')
+var vm = new Vue({})
+console.log(typeof vm)
+console.log(vm instanceof Vue)
+
+var MyComponent = Vue.extend({})
+var mc = new MyComponent()
+console.log(typeof mc)
+console.log(mc instanceof Vue)
+// console.log(mc instanceof VueComponent)
+console.log(mc instanceof MyComponent)
