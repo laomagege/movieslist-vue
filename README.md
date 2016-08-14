@@ -1,6 +1,6 @@
 # movielist-vue
 
-> A Vue.js project for list the movies grab by the scrapy from http://bttiantang.com.
+> A Vue.js project for list the movies grab by the scrapy from bttiantang.com.
 
 ## Build Setup
 
