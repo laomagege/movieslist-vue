@@ -1,6 +1,6 @@
 # movielist-vue
 
-> A Vue.js project
+> A Vue.js project for list the movies grab by the scrapy from http://bttiantang.com.
 
 ## Build Setup
 
@@ -15,13 +15,13 @@ npm run dev
 npm run build
 
 # run unit tests
-npm run unit
+npm run unit (not implement yet ...)
 
 # run e2e tests
-npm run e2e
+npm run e2e (not implement yet ...)
 
 # run all tests
-npm test
+npm test (not implement yet ...)
 ```
 
 
