@@ -56,18 +56,14 @@ export default {
     },
     data (transition) {
       console.log('movApp data hook')
-      // this.mov = this.$root.$get('cacheStore').getMovieById(this.$route.params.movieID)
-      if (this.$route.params.page) {
+      if (this.$route.params.page && this.$route.params.pageNum) {
         this.pagination.current_page = this.$route.params.page
-      } else {
-        this.pagination.current_page = 1
-      }
-
-      if (this.$route.params.pageNum) {
         this.pagination.per_page = this.$route.params.pageNum
       } else {
+        this.pagination.current_page = 1
         this.pagination.per_page = 10
       }
+
       // popState is called, and the route.data need re-query from server.
       this.loadData(true)
 
