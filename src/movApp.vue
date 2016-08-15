@@ -28,6 +28,7 @@
 <script>
 import vPagination from 'vue-bootstrap-pagination'
 import mList from './components/movieList'
+import _ from 'underscore'
 
 export default {
   destroyed () {
@@ -92,7 +93,14 @@ export default {
     pageNumChanged: function (event) {
       this.loadData()
     },
-    // add methods here
+    cacheValid: function () {
+      var pg = this.$root.$get('cacheStore').page
+      var movs = this.$root.$get('cacheStore').movies
+      return (pg.current_page === this.pagination.current_page &&
+      pg.per_page === this.pagination.per_page &&
+      Array.isArray(movs) &&
+      movs.length > 0)
+    },
     loadData: function (routeData) {
       routeData = (routeData || false)
       // push state every time pull the data, so user can back to this point
@@ -103,12 +111,19 @@ export default {
       }
       console.log('Debug purpose: history length count:' + history.length)
 
+      // try to load cache data first
+      if (this.cacheValid()) {
+        this.$set('movies', this.$root.$get('cacheStore').movies)
+        this.pagination = _.clone(this.$root.$get('cacheStore').page)
+        return
+      }
+
       this.$http.get('/papi/movies/' + this.pagination.current_page + '/' + this.pagination.per_page).then(function (response) {
         var rdata = JSON.parse(response.data)
         this.$set('movies', rdata.movies)
         this.$set('pagination', rdata.pagination)
         // save it to the app cache
-        this.$dispatch('evtGetMoviesData', rdata.movies)
+        this.$dispatch('evtCacheData', {movs: rdata.movies, page: rdata.pagination})
       }, function (error) {
         // handle error
         console.log('get movies data failed!!!' + error)
