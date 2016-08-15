@@ -53,6 +53,10 @@ router.map({
     name: 'movieApp',
     component: movieApp
   },
+  '/movieApp/:page/:pageNum': {
+    name: 'movieApp',
+    component: movieApp
+  },
   '/movieDetail/:movieID': {
     name: 'movieDetail',
     component: movieDetail

@@ -5,7 +5,7 @@
         <v-pagination :pagination="pagination" :offset="3"></v-pagination>
       </div>
       <div class="col-xs-2">
-        <select v-on:change="loadData" v-model="pagination.per_page" class="form-control right pagenum-list" debounce="300">
+        <select v-on:change="pageNumChanged" v-model="pagination.per_page" class="form-control right pagenum-list" debounce="300">
           <option>5</option>
           <option>10</option>
           <option>20</option>
@@ -38,12 +38,41 @@ export default {
   },
   created () {
     console.log('module movApp: created')
-    if (this.movies && this.movies.length === 0) {
-      this.loadData()
-    }
+    // if (this.movies && this.movies.length === 0) {
+    //   this.loadData()
+    // }
   },
   init () {
     console.log('module movApp: init')
+  },
+  route: {
+    activate: function (transition) {
+      console.log('movApp activate hook')
+      transition.next()
+    },
+    canActivate: function (transition) {
+      console.log('movApp can activate hook')
+      transition.next()
+    },
+    data (transition) {
+      console.log('movApp data hook')
+      // this.mov = this.$root.$get('cacheStore').getMovieById(this.$route.params.movieID)
+      if (this.$route.params.page) {
+        this.pagination.current_page = this.$route.params.page
+      } else {
+        this.pagination.current_page = 1
+      }
+
+      if (this.$route.params.pageNum) {
+        this.pagination.per_page = this.$route.params.pageNum
+      } else {
+        this.pagination.per_page = 10
+      }
+      // popState is called, and the route.data need re-query from server.
+      this.loadData(true)
+
+      transition.next()
+    }
   },
   data () {
     return {
@@ -60,17 +89,24 @@ export default {
   },
   events: {
     evtPageChanged: function (page) {
-      // if (this.pagination.current_page !== page) {
-      //   this.pagination.current_page = page
-      //   this.loadData()
-      // }
-      // this.pagination.current_page = page
       this.loadData()
     }
   },
   methods: {
+    pageNumChanged: function (event) {
+      this.loadData()
+    },
     // add methods here
-    loadData: function () {
+    loadData: function (routeData) {
+      routeData = (routeData || false)
+      // push state every time pull the data, so user can back to this point
+      var history = window.history
+      if (!routeData) {
+        var url = '/movieApp/' + this.pagination.current_page + '/' + this.pagination.per_page
+        history.pushState({}, '', url)
+      }
+      console.log('Debug purpose: history length count:' + history.length)
+
       this.$http.get('/papi/movies/' + this.pagination.current_page + '/' + this.pagination.per_page).then(function (response) {
         var rdata = JSON.parse(response.data)
         this.$set('movies', rdata.movies)
