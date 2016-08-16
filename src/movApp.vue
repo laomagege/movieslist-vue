@@ -28,7 +28,6 @@
 <script>
 import vPagination from 'vue-bootstrap-pagination'
 import mList from './components/movieList'
-import _ from 'underscore'
 
 export default {
   destroyed () {
@@ -94,8 +93,11 @@ export default {
       this.loadData()
     },
     cacheValid: function () {
-      var pg = this.$root.$get('cacheStore').page
-      var movs = this.$root.$get('cacheStore').movies
+      var pg = this.$root.$get('cacheStore').get('page')
+      var movs = this.$root.$get('cacheStore').get('movies')
+      if (!pg || !movs) {
+        return false
+      }
       return (pg.current_page === this.pagination.current_page &&
       pg.per_page === this.pagination.per_page &&
       Array.isArray(movs) &&
@@ -113,8 +115,8 @@ export default {
 
       // try to load cache data first
       if (this.cacheValid()) {
-        this.$set('movies', this.$root.$get('cacheStore').movies)
-        this.pagination = _.clone(this.$root.$get('cacheStore').page)
+        this.$set('movies', this.$root.$get('cacheStore').get('movies'))
+        this.$set('pagination', this.$root.$get('cacheStore').get('page'))
         return
       }
 

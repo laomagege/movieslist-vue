@@ -27,16 +27,16 @@ export default {
   },
   route: {
     activate: function (transition) {
-      console.log('activate hook')
+      console.log('movieDetail activate hook')
       transition.next()
     },
     canActivate: function (transition) {
-      console.log('can activate hook')
+      console.log('movieDetail can activate hook')
       transition.next()
     },
     data (transition) {
-      console.log('data hook')
-      this.mov = this.$root.$get('cacheStore').getMovieById(this.$route.params.movieID)
+      console.log('movieDetail data hook')
+      this.mov = this.$root.$get('cacheStore').getByID('movies', this.$route.params.movieID)
       transition.next()
     }
   },

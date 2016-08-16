@@ -12,23 +12,42 @@ Vue.config.debug = true
 
 // for location cache
 var store = {
-  setMovies: function (movs) {
-    if (_.isArray(movs)) {
-      // this.movies = _.object(_.map(movs, function (value) { return value._id.$id }), movs)
-      this.movies = movs
-      // var that = this
-      _.each(this.movies, function (mov, index, list) {
-        this.idMapMovies[mov._id.$id] = index
-      }, this)
+  set (propName, val, idfunc) {
+    if (_.isArray(val)) {
+      this[propName] = val
+      // if idfunc provide, create an idMap for this array
+      if (_.isFunction(idfunc)) {
+        this['idMap' + propName] = {}
+        _.each(this[propName], function (item, index, list) {
+          this['idMap' + propName][idfunc(item)] = index
+        }, this)
+      }
+    } else if (_.isObject(val)) {
+      this[propName] = _.clone(val)
+    } else {
+      this[propName] = val
     }
   },
-  getMovieById: function (id) {
-    return this.movies[this.idMapMovies[id]]
+  get (propName) {
+    if (_.isArray(this[propName])) {
+      return this[propName]
+    } else if (_.isObject(this[propName])) {
+      return _.clone(this[propName])
+    } else {
+      return this[propName]
+    }
   },
-  movies: [],
-  idMapMovies: {},
-  page: {},
-  filter: {}
+  getByID (propName, id) {
+    if (_.isArray(this[propName])) {
+      if (this['idMap' + propName]) {
+        return this[propName][this['idMap' + propName][id]]
+      }
+    } else if (_.isObject(this[propName])) {
+      return this[propName][id]
+    }
+
+    return undefined
+  }
 }
 
 var App = Vue.extend({
@@ -43,8 +62,8 @@ var App = Vue.extend({
   },
   events: {
     evtCacheData: function (cacheData) {
-      this.cacheStore.setMovies(cacheData.movs)
-      this.cacheStore.page = _.clone(cacheData.page)
+      this.cacheStore.set('movies', cacheData.movs, function (item) { return item._id.$id })
+      this.cacheStore.set('page', cacheData.page)
     }
   }
 })
